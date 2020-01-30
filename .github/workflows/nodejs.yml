@@ -1,0 +1,30 @@
+name: Node CI
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Use Node.js
+      uses: actions/setup-node@v1
+      with:
+        node-version: 12.x
+    - name: npm install, build, and test
+      run: |
+        npm ci
+        npm run build
+        npm run export
+        # npm test
+      env:
+        CI: true
+    - name: deployment by apex up
+      uses: apex/actions/up@master
+      with:
+        args: deploy staging --no-build
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
